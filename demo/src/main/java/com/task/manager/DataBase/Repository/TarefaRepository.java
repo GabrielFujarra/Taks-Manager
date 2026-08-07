@@ -1,6 +1,6 @@
-package com.task.manager.demo.DataBase.Repository;
+package com.task.manager.DataBase.Repository;
 
-import com.task.manager.demo.DataBase.Model.TarefaEntity;
+import com.task.manager.DataBase.Model.TarefaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,8 +1,8 @@
-package com.task.manager.demo.Handler;
+package com.task.manager.Handler;
 
-import com.task.manager.demo.Excepiton.BadRequestExcepiton;
-import com.task.manager.demo.Excepiton.ErrorResponse;
-import com.task.manager.demo.Excepiton.NotFoundExcepiton;
+import com.task.manager.Excepiton.BadRequestExcepiton;
+import com.task.manager.Excepiton.ErrorResponse;
+import com.task.manager.Excepiton.NotFoundExcepiton;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,17 +1,15 @@
-package com.task.manager.demo.Service;
+package com.task.manager.Service;
 
 
-import com.task.manager.demo.DataBase.Model.TimeEntity;
-import com.task.manager.demo.DataBase.Repository.TimeRepository;
-import com.task.manager.demo.Dto.TimeDto;
-import com.task.manager.demo.Excepiton.BadRequestExcepiton;
-import com.task.manager.demo.Excepiton.NotFoundExcepiton;
+import com.task.manager.DataBase.Model.TimeEntity;
+import com.task.manager.DataBase.Repository.TimeRepository;
+import com.task.manager.Dto.TimeDto;
+import com.task.manager.Excepiton.BadRequestExcepiton;
+import com.task.manager.Excepiton.NotFoundExcepiton;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.LongFunction;
 
 @Service
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package com.task.manager.demo.DataBase.Model;
+package com.task.manager.DataBase.Model;
 
 
 import jakarta.persistence.Column;

@@ -1,49 +1,48 @@
-package com.task.manager.demo.DataBase.Model;
+package com.task.manager.DataBase.Model;
 
-
-import com.task.manager.demo.Enums.StatusType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(name = "tarefa")
+@Table(name = "usuario")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TarefaEntity {
+public class UsuarioEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
-    private String descricao;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    @Enumerated(EnumType.STRING)
-    private StatusType status;
+    @Column(nullable = false)
+    private String senha;
 
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id", referencedColumnName = "id")
-    private TimeEntity timeTarefa;
+    private TimeEntity time;
 
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
-    private UsuarioEntity usuarioTarefa;
+    @OneToMany (mappedBy = "usuarioTarefa")
+    private List<TarefaEntity> tarefas = new ArrayList<>();
 }

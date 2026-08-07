@@ -1,4 +1,4 @@
-package com.task.manager.demo.Enums;
+package com.task.manager.Enums;
 
 public enum StatusType {
 
