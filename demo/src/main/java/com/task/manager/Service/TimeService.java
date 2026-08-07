@@ -18,7 +18,7 @@ public class TimeService {
 
     private final TimeRepository timeRepository ;
 
-    public void criarTime (TimeRequestDto timeDto) throws BadRequestException {
+    public void criarTime (TimeRequestDto timeDto){
 
        boolean time = timeRepository.existsByNome(timeDto.nome());
 
@@ -39,7 +39,7 @@ public class TimeService {
                 .toList();
     }
 
-    public TimeResponseDto buscarTimePorNome(String nome) throws NotFoundException {
+    public TimeResponseDto buscarTimePorNome(String nome){
 
         TimeEntity time = timeRepository.findByNome(nome)
                 .orElse(null);
@@ -51,7 +51,7 @@ public class TimeService {
         throw new NotFoundException("Time não encontrado");
     }
 
-    public void deletarTime(String nome) throws NotFoundException {
+    public void deletarTime(String nome){
 
         TimeEntity time = timeRepository.findByNome(nome)
                 .orElseThrow(() -> new NotFoundException("Time não encontrado"));

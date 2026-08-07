@@ -1,0 +1,67 @@
+package com.task.manager.Service;
+
+
+import com.task.manager.DataBase.Model.TimeEntity;
+import com.task.manager.DataBase.Model.UsuarioEntity;
+import com.task.manager.DataBase.Repository.TimeRepository;
+import com.task.manager.DataBase.Repository.UsuarioRepository;
+import com.task.manager.Dto.request.UsuarioRequestDto;
+import com.task.manager.Dto.response.UsuarioResponseDto;
+import com.task.manager.Exception.BadRequestException;
+import com.task.manager.Exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.message.StringFormattedMessage;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class UsuarioService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final TimeRepository timeRepository;
+
+
+    public void criarUsuario(UsuarioRequestDto usuarioDto){
+
+        boolean usuario = usuarioRepository.existsByEmail(usuarioDto.email());
+        Optional<TimeEntity> time = timeRepository.findByNome(usuarioDto.nomeTime());
+
+        if (usuario){
+            throw new BadRequestException("Usuário já existe");
+        }
+
+        usuarioRepository.save(UsuarioEntity.builder()
+                .nome(usuarioDto.nome())
+                .email(usuarioDto.email())
+                .senha(usuarioDto.senha())
+                .time(time.orElseThrow(() -> new NotFoundException("Time não encontrado")))
+                .build());
+
+
+    }
+
+    public List<UsuarioResponseDto> listarUsuarios() {
+
+        return usuarioRepository.findAllWithTime()
+                .stream()
+                .map(usuario -> new UsuarioResponseDto(usuario.getId(), usuario.getNome(), usuario.getEmail(),usuario.getTime().getNome()))
+                .toList();
+    }
+
+    public UsuarioResponseDto buscarUsuarioPorEmail(String email){
+
+        UsuarioEntity usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+        return new UsuarioResponseDto(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getTime().getNome());
+    }
+
+    public void deletarUsuarioPorEmail(String email){
+
+        UsuarioEntity usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));;
+        usuarioRepository.delete(usuario);
+    }
+}
