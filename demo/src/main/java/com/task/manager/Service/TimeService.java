@@ -3,9 +3,10 @@ package com.task.manager.Service;
 
 import com.task.manager.DataBase.Model.TimeEntity;
 import com.task.manager.DataBase.Repository.TimeRepository;
-import com.task.manager.Dto.TimeDto;
-import com.task.manager.Excepiton.BadRequestExcepiton;
-import com.task.manager.Excepiton.NotFoundExcepiton;
+import com.task.manager.Dto.request.TimeRequestDto;
+import com.task.manager.Dto.response.TimeResponseDto;
+import com.task.manager.Exception.BadRequestException;
+import com.task.manager.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,12 @@ public class TimeService {
 
     private final TimeRepository timeRepository ;
 
-    public void CriarTime (TimeDto timeDto) throws BadRequestExcepiton {
+    public void criarTime (TimeRequestDto timeDto) throws BadRequestException {
 
-        TimeEntity time = timeRepository.findByNome(timeDto.nome())
-                .orElse(null);
+       boolean time = timeRepository.existsByNome(timeDto.nome());
 
-        if (time != null) {
-            throw new BadRequestExcepiton("Time já existe");
+        if (time) {
+            throw new BadRequestException("Time já existe");
         }
 
         timeRepository.save(TimeEntity.builder()
@@ -31,27 +31,30 @@ public class TimeService {
                 .build());
     }
 
-    public List<TimeEntity> ListarTimes() {
+    public List<TimeResponseDto> listarTimes() {
 
-        return timeRepository.findAll();
+        return timeRepository.findAll()
+                .stream()
+                .map(time -> new TimeResponseDto(time.getNome(), time.getId()))
+                .toList();
     }
 
-    public TimeEntity BuscarTimePorNome(String nome) throws NotFoundExcepiton {
+    public TimeResponseDto buscarTimePorNome(String nome) throws NotFoundException {
 
         TimeEntity time = timeRepository.findByNome(nome)
                 .orElse(null);
 
         if (time != null){
-            return time ;
+            return new TimeResponseDto(time.getNome(), time.getId());
         }
 
-        throw new NotFoundExcepiton("Time não encontrado");
+        throw new NotFoundException("Time não encontrado");
     }
 
-    public void DeletarTime(Long id) throws NotFoundExcepiton {
+    public void deletarTime(String nome) throws NotFoundException {
 
-        TimeEntity time = timeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundExcepiton("Time não encontrado"));
+        TimeEntity time = timeRepository.findByNome(nome)
+                .orElseThrow(() -> new NotFoundException("Time não encontrado"));
 
         timeRepository.delete(time);
     }

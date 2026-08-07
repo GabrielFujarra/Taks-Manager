@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface TimeRepository extends JpaRepository<TimeEntity, Long> {
 
     Optional<TimeEntity> findByNome(String nome);
+
+    Boolean existsByNome(String nome);
 }

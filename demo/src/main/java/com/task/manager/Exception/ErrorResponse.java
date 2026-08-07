@@ -1,4 +1,4 @@
-package com.task.manager.Excepiton;
+package com.task.manager.Exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

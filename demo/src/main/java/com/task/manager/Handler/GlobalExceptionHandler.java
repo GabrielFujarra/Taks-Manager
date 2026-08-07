@@ -1,8 +1,8 @@
 package com.task.manager.Handler;
 
-import com.task.manager.Excepiton.BadRequestExcepiton;
-import com.task.manager.Excepiton.ErrorResponse;
-import com.task.manager.Excepiton.NotFoundExcepiton;
+import com.task.manager.Exception.BadRequestException;
+import com.task.manager.Exception.ErrorResponse;
+import com.task.manager.Exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundExcepiton.class)
-    public ResponseEntity<ErrorResponse>handleNotFoundExcepiton(NotFoundExcepiton ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse>handleNotFoundExcepiton(NotFoundException ex) {
         ErrorResponse response = ErrorResponse.builder()
                 .message(ex.getMessage())
                 .status(HttpStatus.NOT_FOUND.value())
@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    @ExceptionHandler(BadRequestExcepiton.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestExcepiton(BadRequestExcepiton ex){
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestExcepiton(BadRequestException ex){
         ErrorResponse response = ErrorResponse.builder()
                 .message(ex.getMessage())
                 .status(HttpStatus.BAD_REQUEST.value())
