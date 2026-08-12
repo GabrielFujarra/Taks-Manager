@@ -8,6 +8,7 @@ import com.task.manager.DataBase.Repository.TimeRepository;
 import com.task.manager.DataBase.Repository.UsuarioRepository;
 import com.task.manager.Dto.request.TarefaRequestDto;
 import com.task.manager.Dto.response.TarefaResponseDto;
+import com.task.manager.Enums.RoleType;
 import com.task.manager.Exception.BadRequestException;
 import com.task.manager.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,10 @@ public class TarefaService {
     private final UsuarioRepository usuarioRepository;
     private final TimeRepository timeRepository ;
 
-    public void criarTarefa(TarefaRequestDto tarefaDto){
+    public void criarTarefa(TarefaRequestDto tarefaDto, String emailUsuarioLogado){
+
+        UsuarioEntity usuarioLogado = usuarioRepository.findByEmail(emailUsuarioLogado)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
         UsuarioEntity usuario = usuarioRepository.findByEmail(tarefaDto.emailUsuario())
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
@@ -33,8 +37,13 @@ public class TarefaService {
         TimeEntity time = timeRepository.findByNome(tarefaDto.nomeTime())
                 .orElseThrow(() -> new NotFoundException("Time não encontrado"));
 
-        if(!usuario.getTime().getId().equals(time.getId())){
+        if (!usuario.getTime().getId().equals(time.getId())) {
             throw new BadRequestException("Usuário não pertence ao time especificado");
+        }
+
+        if (!usuarioLogado.getRoleType().equals(RoleType.LIDER)
+                || !usuarioLogado.getTime().getId().equals(time.getId())) {
+            throw new BadRequestException("Você não tem permissão para criar tarefas nesse time");
         }
 
         tarefaRepository.save(TarefaEntity.builder()

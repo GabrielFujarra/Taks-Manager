@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:18.0
+    container_name: task-manager-db
+    environment:
+      POSTGRES_DB: taskmanager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+  app:
+    build: .
+    container_name: task-manager-app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskmanager
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SECRET_KEY: ${SECRET_KEY}
+      EXPIRATION: ${EXPIRATION}
+    ports:
+      - "8080:8080"

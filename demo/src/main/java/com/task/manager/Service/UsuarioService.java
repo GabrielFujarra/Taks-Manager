@@ -1,16 +1,18 @@
 package com.task.manager.Service;
 
 
+import com.task.manager.Config.SecurityConfig;
 import com.task.manager.DataBase.Model.TimeEntity;
 import com.task.manager.DataBase.Model.UsuarioEntity;
 import com.task.manager.DataBase.Repository.TimeRepository;
 import com.task.manager.DataBase.Repository.UsuarioRepository;
 import com.task.manager.Dto.request.UsuarioRequestDto;
 import com.task.manager.Dto.response.UsuarioResponseDto;
+import com.task.manager.Enums.RoleType;
 import com.task.manager.Exception.BadRequestException;
 import com.task.manager.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.message.StringFormattedMessage;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final TimeRepository timeRepository;
+    private final PasswordEncoder passwordEncoder ;
 
 
     public void criarUsuario(UsuarioRequestDto usuarioDto){
@@ -36,7 +39,8 @@ public class UsuarioService {
         usuarioRepository.save(UsuarioEntity.builder()
                 .nome(usuarioDto.nome())
                 .email(usuarioDto.email())
-                .senha(usuarioDto.senha())
+                .senha(passwordEncoder.encode(usuarioDto.senha()))
+                .roleType(RoleType.INTEGRANTE)
                 .time(time.orElseThrow(() -> new NotFoundException("Time não encontrado")))
                 .build());
 
@@ -64,4 +68,14 @@ public class UsuarioService {
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));;
         usuarioRepository.delete(usuario);
     }
+
+    public void promoverUsuario (String email) {
+        UsuarioEntity usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+
+        usuario.setRoleType(RoleType.LIDER);
+
+        usuarioRepository.save(usuario);
+    }
+
 }

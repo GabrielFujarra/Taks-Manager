@@ -2,10 +2,12 @@ package com.task.manager.Controller;
 
 import com.task.manager.Dto.request.TarefaRequestDto;
 import com.task.manager.Dto.response.TarefaResponseDto;
+import com.task.manager.Security.UsuarioDetails;
 import com.task.manager.Service.TarefaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,23 +25,18 @@ public class TarefaController {
 
     private final TarefaService tarefaService ;
 
-    @GetMapping
-    public ResponseEntity<List<TarefaResponseDto>> listarTarefas() {
 
-        List<TarefaResponseDto> tarefas = tarefaService.listarTarefas();
-        return ResponseEntity.ok().body(tarefas);
-    }
+    @GetMapping("/meu-time")
+    public ResponseEntity<List<TarefaResponseDto>> listarTarefaPorTime (@AuthenticationPrincipal UsuarioDetails usuarioDetails) {
 
-    @GetMapping("/{time}")
-    public ResponseEntity<List<TarefaResponseDto>> listarTarefaPorTime (@PathVariable String time) {
-
-        List<TarefaResponseDto> tarefas = tarefaService.buscarTarefaPorTime(time);
-        return ResponseEntity.ok().body(tarefas);
+        String nomeTime = usuarioDetails.getUsuarioEntity().getTime().getNome();
+        List<TarefaResponseDto> tarefas  = tarefaService.buscarTarefaPorTime(nomeTime);
+        return ResponseEntity.ok(tarefas);
     }
 
     @PostMapping
-    public ResponseEntity<Void> criarTarefa (@RequestBody TarefaRequestDto tarefaRequest) {
-        tarefaService.criarTarefa(tarefaRequest);
+    public ResponseEntity<Void> criarTarefa (@RequestBody TarefaRequestDto tarefaRequest, @AuthenticationPrincipal UsuarioDetails usuarioDetails) {
+        tarefaService.criarTarefa(tarefaRequest, usuarioDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

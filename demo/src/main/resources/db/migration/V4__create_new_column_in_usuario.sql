@@ -1,0 +1,2 @@
+ALTER TABLE usuario
+    ADD COLUMN role_type VARCHAR(40) NOT NULL ;
