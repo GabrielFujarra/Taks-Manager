@@ -36,7 +36,10 @@ public class TarefaController {
 
     @PostMapping
     public ResponseEntity<Void> criarTarefa (@RequestBody TarefaRequestDto tarefaRequest, @AuthenticationPrincipal UsuarioDetails usuarioDetails) {
-        tarefaService.criarTarefa(tarefaRequest, usuarioDetails.getUsername());
+
+        Long usuarioId = usuarioDetails.getUsuarioEntity().getId();
+
+        tarefaService.criarTarefa(tarefaRequest, usuarioId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

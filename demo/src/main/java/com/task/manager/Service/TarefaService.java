@@ -27,33 +27,32 @@ public class TarefaService {
     private final UsuarioRepository usuarioRepository;
     private final TimeRepository timeRepository ;
 
-    public void criarTarefa(TarefaRequestDto tarefaDto, String emailUsuarioLogado){
+    @Transactional
+    public void criarTarefa(TarefaRequestDto tarefaDto, Long usuarioId) {
 
-        UsuarioEntity usuarioLogado = usuarioRepository.findByEmail(emailUsuarioLogado)
+        UsuarioEntity usuarioLogado = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
-        UsuarioEntity usuario = usuarioRepository.findByEmail(tarefaDto.emailUsuario())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
-
-        TimeEntity time = timeRepository.findByNome(tarefaDto.nomeTime())
-                .orElseThrow(() -> new NotFoundException("Time não encontrado"));
-
-        if (!usuario.getTime().getId().equals(time.getId())) {
-            throw new BadRequestException("Usuário não pertence ao time especificado");
+        if (!usuarioLogado.getRoleType().equals(RoleType.LIDER)) {
+            throw new BadRequestException(
+                    "Você não tem permissão para criar tarefas nesse time"
+            );
         }
 
-        if (!usuarioLogado.getRoleType().equals(RoleType.LIDER)
-                || !usuarioLogado.getTime().getId().equals(time.getId())) {
-            throw new BadRequestException("Você não tem permissão para criar tarefas nesse time");
+        TimeEntity time = usuarioLogado.getTime();
+
+        if (time == null) {
+            throw new NotFoundException("Usuário não possui um time");
         }
 
-        tarefaRepository.save(TarefaEntity.builder()
-                .nome(tarefaDto.nome())
-                .descricao(tarefaDto.descricao())
-                .status(tarefaDto.status())
-                .usuarioTarefa(usuario)
-                .timeTarefa(time)
-                .build()
+        tarefaRepository.save(
+                TarefaEntity.builder()
+                        .nome(tarefaDto.nome())
+                        .descricao(tarefaDto.descricao())
+                        .status(tarefaDto.status())
+                        .usuarioTarefa(usuarioLogado)
+                        .timeTarefa(time)
+                        .build()
         );
     }
 
