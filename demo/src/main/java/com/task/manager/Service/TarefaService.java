@@ -14,6 +14,7 @@ import com.task.manager.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.LongFunction;
@@ -56,20 +57,27 @@ public class TarefaService {
         );
     }
 
-    public List<TarefaResponseDto> listarTarefas() {
-        return tarefaRepository.findAllWithTime()
-                .stream()
-                .map(tarefa -> new TarefaResponseDto(tarefa.getId(), tarefa.getNome(), tarefa.getDescricao(), tarefa.getStatus(), tarefa.getTimeTarefa().getNome(), tarefa.getUsuarioTarefa().getEmail()))
-                .toList();
-    }
+    @Transactional(readOnly = true)
+    public List<TarefaResponseDto> buscarTarefasDoTimeDoUsuario(Long usuarioId) {
+        UsuarioEntity usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
-    public List<TarefaResponseDto> buscarTarefaPorTime (String nome) {
-        TimeEntity time = timeRepository.findByNome(nome)
-                .orElseThrow(() -> new NotFoundException("Time não encontrado"));
+        if (usuario.getTime() == null) {
+            throw new BadRequestException("O usuário não pertence a nenhum time.");
+        }
 
-        return tarefaRepository.findByTimeIdWithFetch(time.getId())
+        Long timeId = usuario.getTime().getId();
+
+        return tarefaRepository.findByTimeIdWithFetch(timeId)
                 .stream()
-                .map(tarefa -> new TarefaResponseDto(tarefa.getId(), tarefa.getNome(), tarefa.getDescricao(), tarefa.getStatus(), tarefa.getTimeTarefa().getNome(), tarefa.getUsuarioTarefa().getEmail()))
+                .map(tarefa -> new TarefaResponseDto(
+                        tarefa.getId(),
+                        tarefa.getNome(),
+                        tarefa.getDescricao(),
+                        tarefa.getStatus(),
+                        tarefa.getTimeTarefa().getNome(),
+                        tarefa.getUsuarioTarefa() != null ? tarefa.getUsuarioTarefa().getEmail() : null
+                ))
                 .toList();
     }
 

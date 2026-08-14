@@ -30,7 +30,6 @@ public class UsuarioService {
     public void criarUsuario(UsuarioRequestDto usuarioDto){
 
         boolean usuario = usuarioRepository.existsByEmail(usuarioDto.email());
-        Optional<TimeEntity> time = timeRepository.findByNome(usuarioDto.nomeTime());
 
         if (usuario){
             throw new BadRequestException("Usuário já existe");
@@ -41,7 +40,6 @@ public class UsuarioService {
                 .email(usuarioDto.email())
                 .senha(passwordEncoder.encode(usuarioDto.senha()))
                 .roleType(RoleType.INTEGRANTE)
-                .time(time.orElseThrow(() -> new NotFoundException("Time não encontrado")))
                 .build());
 
 
@@ -75,6 +73,18 @@ public class UsuarioService {
 
         usuario.setRoleType(RoleType.LIDER);
 
+        usuarioRepository.save(usuario);
+    }
+
+    public void entrarNoTime (String nomeTime, String emailUsuarioLogado) {
+
+        TimeEntity time = timeRepository.findByNome(nomeTime)
+                .orElseThrow(() -> new NotFoundException("Time não encontrado")) ;
+
+        UsuarioEntity usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
+                .orElseThrow(()-> new NotFoundException("Usuário não encontrado")) ;
+
+        usuario.setTime(time);
         usuarioRepository.save(usuario);
     }
 

@@ -41,7 +41,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/time").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();

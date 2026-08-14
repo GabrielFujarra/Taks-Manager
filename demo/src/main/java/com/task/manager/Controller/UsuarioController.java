@@ -2,11 +2,13 @@ package com.task.manager.Controller;
 
 import com.task.manager.Dto.request.UsuarioRequestDto;
 import com.task.manager.Dto.response.UsuarioResponseDto;
+import com.task.manager.Security.UsuarioDetails;
 import com.task.manager.Service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,6 +64,15 @@ public class UsuarioController {
         usuarioService.promoverUsuario(email);
 
         return ResponseEntity.noContent().build();
+
     }
+
+    @PutMapping("/entrar-no-time/{nomeTime}")
+    public ResponseEntity<Void> entrarNoTime (@PathVariable String nomeTime, @AuthenticationPrincipal UsuarioDetails usuarioDetails) {
+
+        usuarioService.entrarNoTime(nomeTime, usuarioDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

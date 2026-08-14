@@ -1,0 +1,2 @@
+ALTER TABLE usuario
+ALTER COLUMN time_id DROP NOT NULL;

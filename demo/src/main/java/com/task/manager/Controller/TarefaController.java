@@ -29,8 +29,8 @@ public class TarefaController {
     @GetMapping("/meu-time")
     public ResponseEntity<List<TarefaResponseDto>> listarTarefaPorTime (@AuthenticationPrincipal UsuarioDetails usuarioDetails) {
 
-        String nomeTime = usuarioDetails.getUsuarioEntity().getTime().getNome();
-        List<TarefaResponseDto> tarefas  = tarefaService.buscarTarefaPorTime(nomeTime);
+        Long usuarioId = usuarioDetails.getUsuarioEntity().getId();
+        List<TarefaResponseDto> tarefas  = tarefaService.buscarTarefasDoTimeDoUsuario(usuarioId);
         return ResponseEntity.ok(tarefas);
     }
 
